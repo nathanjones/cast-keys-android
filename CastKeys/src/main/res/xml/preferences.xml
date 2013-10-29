@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListPreference
+        android:key="pref_them"
+        android:title="@string/pref_theme"
+        android:summary="@string/pref_theme_summary"
+        android:entries="@array/pref_theme_entries"
+        android:entryValues="@array/pref_theme_entry_values"
+        android:defaultValue="default">
+    </ListPreference>
+
+    <EditTextPreference
+        android:key="pref_app_name"
+        android:title="@string/pref_app_name"
+        android:summary="@string/pref_app_name_summary"
+        android:defaultValue="@string/nrj_cast_app" />
+
+    <CheckBoxPreference
+        android:key="pref_kickass"
+        android:title="@string/pref_kickass"
+        android:summary="@string/pref_kickass_summary"
+        android:defaultValue="true"
+        />
+
+</PreferenceScreen>

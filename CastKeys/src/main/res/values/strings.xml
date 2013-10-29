@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cast Keys</string>
+    <string name="title_section1">Cast Keys</string>
+    <string name="title_section2">Settings</string>
+    <string name="title_section3">About</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Cast</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_cast">Cast</string>
+
+    <string name="title_settings">Settings</string>
+
+    <string name="nrj_cast_app">af2828a5-5a82-4be6-960a-2171287aed09</string>
+
+    <string name="pref_theme">Receiver Theme</string>
+    <string name="pref_theme_summary">Choose the theme for the receiver window.</string>
+    <string-array name="pref_theme_entries">
+        <item>Default</item>
+        <item>Hacker</item>
+        <item>Plain</item>
+    </string-array>
+    <string-array
+        name="pref_theme_entry_values">
+        <item>default</item>
+        <item>hacker</item>
+        <item>plain</item>
+    </string-array>
+    <string name="pref_app_name">Cast App Name</string>
+    <string name="pref_app_name_summary">The App name or ID given by Google.</string>
+    <string name="pref_kickass">Use Kickass System</string>
+    <string name="pref_kickass_summary">Sounds good right?</string>
+
+</resources>
