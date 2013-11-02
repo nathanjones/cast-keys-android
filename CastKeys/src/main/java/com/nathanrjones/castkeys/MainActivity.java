@@ -6,7 +6,10 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.MediaRouteActionProvider;
 import android.support.v7.app.MediaRouteButton;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -25,7 +28,6 @@ import com.google.cast.CastDevice;
 import com.google.cast.MediaRouteAdapter;
 import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
-import com.google.cast.SessionError;
 
 import java.io.IOException;
 
@@ -63,35 +65,13 @@ public class MainActivity extends Activity
 
         mMediaRouteButton = (MediaRouteButton) findViewById(R.id.action_cast);
 
-//        mCastContext = new CastContext(getApplicationContext());
-//        MediaRouteHelper.registerMinimalMediaRouteProvider(mCastContext, this);
-//        mMediaRouter = MediaRouter.getInstance(getApplicationContext());
-//        mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector(
-//                MediaRouteHelper.CATEGORY_CAST);
-//        mMediaRouteButton.setRouteSelector(mMediaRouteSelector);
-//        mMediaRouterCallback = new MyMediaRouterCallback();
-
+        mCastContext = new CastContext(getApplicationContext());
+        MediaRouteHelper.registerMinimalMediaRouteProvider(mCastContext, this);
+        mMediaRouter = MediaRouter.getInstance(getApplicationContext());
+        mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector(
+                MediaRouteHelper.CATEGORY_CAST, APP_NAME, null);
+        mMediaRouterCallback = new MediaRouterCallback();
     }
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
-//                MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        mMediaRouter.removeCallback(mMediaRouterCallback);
-//        super.onStop();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        MediaRouteHelper.unregisterMediaRouteProvider(mCastContext);
-//        mCastContext.dispose();
-//        super.onDestroy();
-//    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -128,8 +108,6 @@ public class MainActivity extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-
-
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
@@ -137,20 +115,19 @@ public class MainActivity extends Activity
             getMenuInflater().inflate( R.menu.main, menu );
 
             MenuItem mediaRouteItem = menu.findItem( R.id.action_cast );
-            if (mediaRouteItem != null) {
-                mMediaRouteButton = (MediaRouteButton) mediaRouteItem.getActionView();
-            }
+            mMediaRouteButton = (MediaRouteButton) mediaRouteItem.getActionView();
 
             mCastContext = new CastContext( getApplicationContext() );
             MediaRouteHelper.registerMinimalMediaRouteProvider( mCastContext, this );
             mMediaRouter = MediaRouter.getInstance( getApplicationContext() );
             mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector( MediaRouteHelper.CATEGORY_CAST );
             mMediaRouteButton.setRouteSelector( mMediaRouteSelector );
-            mMediaRouterCallback = new MyMediaRouterCallback();
+            mMediaRouterCallback = new MediaRouterCallback();
 
             restoreActionBar();
             return true;
         }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -169,7 +146,14 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    private class MyMediaRouterCallback extends MediaRouter.Callback {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
+        //        MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+    }
+
+    private class MediaRouterCallback extends MediaRouter.Callback {
         @Override
         public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo route) {
             MediaRouteHelper.requestCastDeviceForRoute(route);
@@ -184,7 +168,7 @@ public class MainActivity extends Activity
 
     @Override
     public void onDeviceAvailable(CastDevice castDevice, String s, MediaRouteStateChangeListener mediaRouteStateChangeListener) {
-        //setSelectedDevice(castDevice);
+        setSelectedDevice(castDevice);
     }
 
     @Override
