@@ -243,7 +243,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         switch (item.getItemId()) {
-            case R.id.media_route_menu_item:
+            case R.id.action_cast:
                 Toast.makeText(getActivity(), "Choose a Chromecast Device.", Toast.LENGTH_SHORT).show();
                 return true;
         }

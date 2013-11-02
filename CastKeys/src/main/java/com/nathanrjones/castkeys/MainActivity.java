@@ -7,6 +7,9 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.MediaRouteButton;
+import android.support.v7.media.MediaRouteSelector;
+import android.support.v7.media.MediaRouter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,18 +17,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.cast.ApplicationChannel;
+import com.google.cast.ApplicationMetadata;
+import com.google.cast.ApplicationSession;
+import com.google.cast.CastContext;
+import com.google.cast.CastDevice;
+import com.google.cast.MediaRouteAdapter;
+import com.google.cast.MediaRouteHelper;
+import com.google.cast.MediaRouteStateChangeListener;
+import com.google.cast.SessionError;
+
+import java.io.IOException;
+
+import static android.app.ActionBar.NAVIGATION_MODE_STANDARD;
+
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, MediaRouteAdapter {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private CharSequence mTitle;
+
+    private CastContext mCastContext;
+    private MediaRouteButton mMediaRouteButton;
+    private MediaRouter mMediaRouter;
+    private MediaRouteSelector mMediaRouteSelector;
+    private MediaRouter.Callback mMediaRouterCallback;
+    private CastDevice mSelectedDevice;
+    private MediaRouteStateChangeListener mRouteStateListener;
+
+    private static final String APP_NAME = "af2828a5-5a82-4be6-960a-2171287aed09";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +60,38 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mMediaRouteButton = (MediaRouteButton) findViewById(R.id.action_cast);
+
+//        mCastContext = new CastContext(getApplicationContext());
+//        MediaRouteHelper.registerMinimalMediaRouteProvider(mCastContext, this);
+//        mMediaRouter = MediaRouter.getInstance(getApplicationContext());
+//        mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector(
+//                MediaRouteHelper.CATEGORY_CAST);
+//        mMediaRouteButton.setRouteSelector(mMediaRouteSelector);
+//        mMediaRouterCallback = new MyMediaRouterCallback();
+
     }
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
+//                MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        mMediaRouter.removeCallback(mMediaRouterCallback);
+//        super.onStop();
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        MediaRouteHelper.unregisterMediaRouteProvider(mCastContext);
+//        mCastContext.dispose();
+//        super.onDestroy();
+//    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -67,7 +118,8 @@ public class MainActivity extends Activity
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        assert actionBar != null;
+        actionBar.setNavigationMode(NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
@@ -75,11 +127,27 @@ public class MainActivity extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+
+
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
+            getMenuInflater().inflate( R.menu.main, menu );
+
+            MenuItem mediaRouteItem = menu.findItem( R.id.action_cast );
+            if (mediaRouteItem != null) {
+                mMediaRouteButton = (MediaRouteButton) mediaRouteItem.getActionView();
+            }
+
+            mCastContext = new CastContext( getApplicationContext() );
+            MediaRouteHelper.registerMinimalMediaRouteProvider( mCastContext, this );
+            mMediaRouter = MediaRouter.getInstance( getApplicationContext() );
+            mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector( MediaRouteHelper.CATEGORY_CAST );
+            mMediaRouteButton.setRouteSelector( mMediaRouteSelector );
+            mMediaRouterCallback = new MyMediaRouterCallback();
+
             restoreActionBar();
             return true;
         }
@@ -99,6 +167,38 @@ public class MainActivity extends Activity
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class MyMediaRouterCallback extends MediaRouter.Callback {
+        @Override
+        public void onRouteSelected(MediaRouter router, MediaRouter.RouteInfo route) {
+            MediaRouteHelper.requestCastDeviceForRoute(route);
+        }
+
+        @Override
+        public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo route) {
+            mSelectedDevice = null;
+            mRouteStateListener = null;
+        }
+    }
+
+    @Override
+    public void onDeviceAvailable(CastDevice castDevice, String s, MediaRouteStateChangeListener mediaRouteStateChangeListener) {
+        //setSelectedDevice(castDevice);
+    }
+
+    @Override
+    public void onSetVolume(double v) {
+
+    }
+
+    @Override
+    public void onUpdateVolume(double v) {
+
+    }
+
+    private void setSelectedDevice(CastDevice device) {
+        mSelectedDevice = device;
     }
 
     /**

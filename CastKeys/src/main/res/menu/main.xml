@@ -1,8 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/media_route_menu_item"
+        android:id="@+id/action_cast"
         android:title="@string/action_cast"
         android:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        android:actionViewClass="android.support.v7.app.MediaRouteButton"
         android:showAsAction="always"/>
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
