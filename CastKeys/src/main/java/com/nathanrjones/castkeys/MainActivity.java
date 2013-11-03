@@ -12,11 +12,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.MediaRouteButton;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +43,9 @@ public class MainActivity extends FragmentActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    private EditText mMessageInput;
+
+    private FragmentActivity mActivity;
 
     private CastContext mCastContext;
     private MediaRouteButton mMediaRouteButton;
@@ -75,11 +81,20 @@ public class MainActivity extends FragmentActivity
         mMediaRouter = MediaRouter.getInstance( getApplicationContext() );
         mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector( MediaRouteHelper.CATEGORY_CAST );
         mMediaRouterCallback = new MediaRouterCallback();
+
+        mMessageInput = (EditText) findViewById(R.id.message_input);
+        if (mMessageInput != null) mMessageInput.addTextChangedListener(messageTextWatcher);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        mActivity = this;
+
+        mMessageInput = (EditText) findViewById(R.id.message_input);
+        if (mMessageInput != null) mMessageInput.addTextChangedListener(messageTextWatcher);
+
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
     }
@@ -164,6 +179,28 @@ public class MainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private TextWatcher messageTextWatcher = new TextWatcher()
+    {
+        @Override
+        public void onTextChanged(CharSequence s , int start,int before,int count){
+
+            String newCharacters = s.toString();
+
+            ActionBar actionBar = getActionBar();
+            actionBar.setTitle(newCharacters);
+
+        }
+        @Override
+        public void afterTextChanged(Editable s){
+
+        }
+        @Override
+        public void beforeTextChanged(CharSequence s , int start,int count , int after){
+
+        }
+
+    };
+
     protected final void setMediaRouteButtonVisible() {
         mMediaRouteButton.setVisibility(mMediaRouter.isRouteAvailable(
                 mMediaRouteSelector, 0) ? View.VISIBLE : View.GONE);
@@ -203,11 +240,6 @@ public class MainActivity extends FragmentActivity
         // implementations of the Notification and Lock Screens, or that you will be using your own.
         int flags = 0;
 
-        // Comment out the below line if you are not writing your own Notification Screen.
-        // flags |= ApplicationSession.FLAG_DISABLE_NOTIFICATION;
-
-        // Comment out the below line if you are not writing your own Lock Screen.
-        // flags |= ApplicationSession.FLAG_DISABLE_LOCK_SCREEN_REMOTE_CONTROL;
         mSession.setApplicationOptions(flags);
 
         mSession.setListener(new com.google.cast.ApplicationSession.Listener() {
@@ -216,12 +248,12 @@ public class MainActivity extends FragmentActivity
             public void onSessionStarted(ApplicationMetadata appMetadata) {
 
                 ApplicationChannel channel = mSession.getChannel();
-                if (channel == null) {
-                    return;
-                }
+
+                if (channel == null) return;
 
                 mMessageStream = new MediaProtocolMessageStream();
                 channel.attachMessageStream(mMessageStream);
+
 
                 if (mMessageStream.getPlayerState() == null) {
 
