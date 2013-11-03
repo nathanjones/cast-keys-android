@@ -2,7 +2,17 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/RedActionBar</item>
+        <item name="android:dialogTheme">@style/DarkDialog</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="RedActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <!--<item name="android:background">@color/action_bar</item>-->
+    </style>
+
+    <style name="DarkDialog" parent="android:Theme.Holo.Dialog">
+        <!--<item name="android:textColor">@color/red</item>-->
     </style>
 
 </resources>
