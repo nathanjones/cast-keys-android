@@ -5,8 +5,10 @@ import android.app.FragmentManager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.MediaRouteButton;
@@ -34,6 +36,7 @@ import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
 import com.google.cast.SessionError;
 
+import org.json.JSONObject;
 import java.io.IOException;
 
 import static android.app.ActionBar.NAVIGATION_MODE_STANDARD;
@@ -57,6 +60,7 @@ public class MainActivity extends FragmentActivity
 
     private ApplicationSession mSession;
     private MediaProtocolMessageStream mMessageStream;
+    private CastKeysMessageStream mCastKeysMessageStream;
 
     private static final String APP_NAME = "af2828a5-5a82-4be6-960a-2171287aed09";
 
@@ -251,44 +255,48 @@ public class MainActivity extends FragmentActivity
 
                 if (channel == null) return;
 
-                mMessageStream = new MediaProtocolMessageStream();
-                channel.attachMessageStream(mMessageStream);
+                //mMessageStream = new MediaProtocolMessageStream();
+                //channel.attachMessageStream(mMessageStream);
 
+                mCastKeysMessageStream = new CastKeysMessageStream();
+                channel.attachMessageStream(mCastKeysMessageStream);
 
-                if (mMessageStream.getPlayerState() == null) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                String theme = prefs.getString("pref_them", "default");
 
-                } else {
-                    //updateStatus();
-                }
+                mCastKeysMessageStream.changeTheme(theme);
             }
 
             @Override
             public void onSessionStartFailed(SessionError sessionError) {
-
+                Toast.makeText(mActivity, "Session Start Failed.", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onSessionEnded(SessionError error) {
-
+                Toast.makeText(mActivity, "Session Ended.", Toast.LENGTH_LONG).show();
             }
         });
 
         try {
-            Toast.makeText(this, "Starting session with app name: " + APP_NAME, Toast.LENGTH_LONG);
+            Toast.makeText(this, "Starting Cast Keys Session", Toast.LENGTH_LONG).show();
             mSession.startSession(APP_NAME);
         } catch (IOException e) {
-            Toast.makeText(this, "Failed to open session", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Failed to open session", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onSetVolume(double v) {
-        Toast.makeText(this.getParent(), "Sudo Set Volume!", Toast.LENGTH_SHORT);
+        Toast.makeText(mActivity, "Set Volume!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "NO!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "Sudo Set Volume!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "OK...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onUpdateVolume(double v) {
-        Toast.makeText(this, "Sudo Update Volume!", Toast.LENGTH_SHORT);
+
     }
 
     /**
