@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <ListPreference
-        android:key="pref_them"
+        android:key="pref_theme"
         android:title="@string/pref_theme"
         android:summary="@string/pref_theme_summary"
         android:entries="@array/pref_theme_entries"

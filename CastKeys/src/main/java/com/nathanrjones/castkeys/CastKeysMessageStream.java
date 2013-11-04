@@ -12,14 +12,15 @@ import java.io.IOException;
  */
 public class CastKeysMessageStream extends MessageStream {
 
-    private static final String GAME_NAMESPACE = "com.nathanrjones.castkeys";
+    private static final String CASTKEYS_NAMESPACE = "com.nathanrjones.castkeys";
+    private static final String TEST_NAMESPACE = "Test";
 
     // Commands
-    private static final String CHANGE_THEME = "change_theme";
-    private static final String TYPE_KEYS = "type_keys";
+    private static final String CHANGE_THEME = "theme";
+    private static final String TYPE_KEYS = "string";
 
     protected CastKeysMessageStream() {
-        super(GAME_NAMESPACE);
+        super(TEST_NAMESPACE);
     }
 
     @Override

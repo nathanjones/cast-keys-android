@@ -101,6 +101,13 @@ public class MainActivity extends FragmentActivity
 
         mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                 MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+
+        if (mCastKeysMessageStream != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+            String theme = prefs.getString("pref_theme", "default");
+
+            mCastKeysMessageStream.changeTheme(theme);
+        }
     }
 
     @Override
@@ -186,12 +193,17 @@ public class MainActivity extends FragmentActivity
     private TextWatcher messageTextWatcher = new TextWatcher()
     {
         @Override
-        public void onTextChanged(CharSequence s , int start,int before,int count){
+        public void onTextChanged(CharSequence s, int start,int before,int count){
 
             String newCharacters = s.toString();
 
-            ActionBar actionBar = getActionBar();
-            actionBar.setTitle(newCharacters);
+            if (mCastKeysMessageStream != null) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                String theme = prefs.getString("pref_theme", "default");
+
+                mCastKeysMessageStream.changeTheme(theme);
+                mCastKeysMessageStream.sendCastKeysMessage(newCharacters);
+            }
 
         }
         @Override
@@ -251,6 +263,8 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onSessionStarted(ApplicationMetadata appMetadata) {
 
+                Toast.makeText(mActivity, "Session Started.", Toast.LENGTH_SHORT).show();
+
                 ApplicationChannel channel = mSession.getChannel();
 
                 if (channel == null) return;
@@ -262,7 +276,7 @@ public class MainActivity extends FragmentActivity
                 channel.attachMessageStream(mCastKeysMessageStream);
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                String theme = prefs.getString("pref_them", "default");
+                String theme = prefs.getString("pref_theme", "default");
 
                 mCastKeysMessageStream.changeTheme(theme);
             }
@@ -279,7 +293,7 @@ public class MainActivity extends FragmentActivity
         });
 
         try {
-            Toast.makeText(this, "Starting Cast Keys Session", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Starting Cast Keys Session", Toast.LENGTH_SHORT).show();
             mSession.startSession(APP_NAME);
         } catch (IOException e) {
             Toast.makeText(this, "Failed to open session", Toast.LENGTH_SHORT).show();
