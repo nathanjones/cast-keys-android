@@ -64,6 +64,10 @@ public class MainActivity extends FragmentActivity
 
     private static final String APP_NAME = "af2828a5-5a82-4be6-960a-2171287aed09";
 
+    private static final int POSITION_MAIN = 0;
+    private static final int POSITION_SETTINGS = 1;
+    private static final int POSITION_ABOUT = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,29 +130,42 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
-        if (position == 1){ // Settings
+        if (position == POSITION_SETTINGS){ // Settings
             Intent intent = new Intent();
             intent.setClass(MainActivity.this, SettingsActivity.class);
             startActivityForResult(intent, 0);
             return;
         }
 
+        Fragment fragment;
+
+        switch (position){
+            case POSITION_MAIN:
+                fragment = new MainFragment();
+                break;
+            case POSITION_ABOUT:
+                fragment = new AboutFragment();
+                break;
+            default:
+                fragment = new MainFragment();
+        }
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
+            case POSITION_MAIN:
                 mTitle = getString(R.string.title_section1);
                 break;
-            case 2:
+            case POSITION_SETTINGS:
                 mTitle = getString(R.string.title_section2);
                 break;
-            case 3:
+            case POSITION_ABOUT:
                 mTitle = getString(R.string.title_section3);
                 break;
         }
@@ -321,45 +338,33 @@ public class MainActivity extends FragmentActivity
 
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    // Fragments
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
+    public static class MainFragment extends Fragment {
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_main, container, false);
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+            ((MainActivity) activity).onSectionAttached(POSITION_MAIN);
+        }
+    }
+
+    public static class AboutFragment extends Fragment {
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_about, container, false);
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(POSITION_ABOUT);
         }
     }
 

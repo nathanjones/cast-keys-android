@@ -39,7 +39,7 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
-    private static final int SETTINGS_POSITION = 1;
+    private static final int POSITION_SETTINGS = 1;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -186,12 +186,14 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
+        int lastPosition = mCurrentSelectedPosition;
+
         if (mDrawerListView != null) {
-            if(position == SETTINGS_POSITION){
-                mDrawerListView.setItemChecked(0, true);
+            if(position == POSITION_SETTINGS){
+                mDrawerListView.setItemChecked(lastPosition, true);
             } else {
                 mDrawerListView.setItemChecked(position, true);
+                mCurrentSelectedPosition = position;
             }
         }
         if (mDrawerLayout != null) {

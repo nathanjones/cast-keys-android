@@ -9,12 +9,6 @@
     tools:context=".MainActivity$PlaceholderFragment">
 
     <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <TextView
         android:text="@string/castkeys_prompt"
         android:id="@+id/castkeys_prompt"
         android:layout_height="wrap_content"
@@ -22,6 +16,7 @@
 
     <EditText
         android:id="@+id/message_input"
+        android:hint="Hello Chromecast!"
         android:layout_below="@id/castkeys_prompt"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
