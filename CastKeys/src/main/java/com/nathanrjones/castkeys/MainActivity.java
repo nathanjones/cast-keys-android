@@ -59,7 +59,7 @@ public class MainActivity extends FragmentActivity
     private MediaRouteStateChangeListener mRouteStateListener;
 
     private ApplicationSession mSession;
-    private MediaProtocolMessageStream mMessageStream;
+    private MediaProtocolMessageStream mMediaMessageStream;
     private CastKeysMessageStream mCastKeysMessageStream;
 
     private static final String APP_NAME = "af2828a5-5a82-4be6-960a-2171287aed09";
@@ -294,8 +294,8 @@ public class MainActivity extends FragmentActivity
 
                 if (channel == null) return;
 
-                //mMessageStream = new MediaProtocolMessageStream();
-                //channel.attachMessageStream(mMessageStream);
+                mMediaMessageStream = new MediaProtocolMessageStream();
+                channel.attachMessageStream(mMediaMessageStream);
 
                 mCastKeysMessageStream = new CastKeysMessageStream();
                 channel.attachMessageStream(mCastKeysMessageStream);
@@ -326,11 +326,17 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void onSetVolume(double v) {
-        Toast.makeText(mActivity, "Set Volume!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(mActivity, "NO!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(mActivity, "Sudo Set Volume!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(mActivity, "OK...", Toast.LENGTH_SHORT).show();
+    public void onSetVolume(double volume) {
+        try {
+            if(mMediaMessageStream != null){                
+                mMediaMessageStream.setVolume(volume);
+                mRouteStateListener.onVolumeChanged(volume);    
+            }            
+        } catch (IllegalStateException e){
+            Toast.makeText(mActivity, "Problem Setting Volume", Toast.LENGTH_SHORT).show();
+        } catch (IOException e){
+            Toast.makeText(mActivity, "Problem Setting Volume", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
